@@ -23,15 +23,27 @@
 #' @return A function that takes an integer \code{n} and returns \code{n} colors.
 #' @keywords internal # This function is not meant to be called directly by users
 #' @importFrom grDevices colorRampPalette
-edge_pal <- function(palette = "standard", reverse = FALSE, ...) {
-if (!palette %in% names(.edge_palettes)) {
-    stop(paste("Palette", palette, "not found. Available palettes:",
-
+edge_pal <- function(palette_name = "standard", reverse = FALSE, ...) {
+# Check if palette_name exists
+if (!palette_name %in% names(.edge_palettes)) {
+    stop(paste("Palette", palette_name, "not found. Available palettes:",
 paste(names(.edge_palettes), collapse = ", ")))
 }
-pal <- .edge_palettes[[palette]]
-if (reverse) pal <- rev(pal)
-grDevices::colorRampPalette(pal, ...)
+
+# Get the actual vector of colors for the chosen palette
+pal_colors <- .edge_palettes[[palette_name]]
+
+# Reverse if requested
+if (reverse) {
+    pal_colors <- rev(pal_colors) }
+
+function(n) {
+    if (n > length(pal_colors)) {
+grDevices::colorRampPalette(pal_colors, ...)(n)
+    } else {     
+pal_colors[1:n]
+    }
+}
 }
 
 #' @title Edge Colour and Fill Scales for ggplot2
